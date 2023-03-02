@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Live Data</title>
+</head>
+
+<body>
+    <h1>Live Data:</h1>
+    <div id="data"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('data', (data) => {
+            document.getElementById('data').innerHTML = 'Some data from Arduino ' + data + ' UUUHHHHUUUU!';
+        });
+    </script>
+</body>
+
+</html>
