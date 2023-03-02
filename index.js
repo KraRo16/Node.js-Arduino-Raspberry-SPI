@@ -1,34 +1,35 @@
-const {SerialPort} = require('serialport');
-const { ReadlineParser } = require('@serialport/parser-readline');
-const express = require('express');
-const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const config = {
+  mode: 1,
+  chipSelect: 0,
+  maxSpeedHz: 1000000,
+  bitOrder: spi.ORDER_MSB_FIRST,
+  bitsPerWord: 8
+};
 
-const port = new SerialPort({path:'COM12',
-  baudRate: 9600,
-  dataBits: 8,
-  parity: 'none',
-  stopBits: 1,
-  flowControl: false
-});                       //connect to SerialPort with right path COM(NUMBER OF PORT)
+const device = spi.open(0, 0, config, err => {
+  
+  const message = [{
+    sendBuffer: Buffer.from([0xff, 0xff]),
+    receiveBuffer: Buffer.alloc(2),
+    byteLength: 2,
+    speedHz: 1000000
+  }];
 
+  if (err) throw err;
 
-const parser = new ReadlineParser();
-port.pipe(parser);
-
-let data = '';            //variable for save data receive
-
-parser.on('data', (line) => {
-  console.log(`Received data: ${line}`);
-  data = line;
-  io.emit('data', data); // send data to all connected clients
+  device.transfer(message, (err, message) => {
+  if (err) throw err;
+  console.log(((message[0].receiveBuffer[0] << 8 )+ message[0].receiveBuffer[1]).toString(2));
+  const error = ((0b01000000)&(message[0].receiveBuffer[0])) >> 6;
+  const parity = ((0b10000000)&(message[0].receiveBuffer[0])) >> 7;
+  
+  message[0].receiveBuffer[0] = (0b00111111)&message[0].receiveBuffer[0];
+  
+    const getData = (message[0].receiveBuffer[0] << 8 )+ message[0].receiveBuffer[1];
+  
+    console.log(getData);
+      
+    console.log(error);
+    console.log(parity);
+  });
 });
-
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-
-http.listen(3000, () => {
-  console.log('Server listening on port 3000');
-});                       // start localhost:3000
