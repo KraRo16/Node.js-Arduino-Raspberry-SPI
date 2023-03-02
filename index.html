@@ -3,19 +3,25 @@
 
 <head>
     <title>Live Data</title>
+    <meta charset = "UTF-8">
 </head>
 
 <body>
     <h1>Live Data:</h1>
-    <div id="data"></div>
+    <p>Data: <span id ="data"></span></p>
+    <p>Error: <span id="error"></span></p>
+    <p>Parity: <span id="Parity"></span></p>
 
-    <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
-
-        socket.on('data', (data) => {
-            document.getElementById('data').innerHTML = 'Some data from Arduino ' + data + ' UUUHHHHUUUU!';
-        });
+        fetch('/spi-data')
+        .then(response => response.json)
+        .then(data => {
+            //Here we are update the HTML el with the received data
+            document.getElementById('data').textContent = data.data;
+            document.getElementById('error').textContent = data.error;
+            document.getElementById('parity').textContent = data.parity;
+        })
+        .catch(erro => console.log(error))
     </script>
 </body>
 

@@ -1,3 +1,8 @@
+const spi = require('spi-device');
+const express = require('express');
+
+const app = express();
+
 const config = {
   mode: 1,
   chipSelect: 0,
@@ -25,11 +30,26 @@ const device = spi.open(0, 0, config, err => {
   
   message[0].receiveBuffer[0] = (0b00111111)&message[0].receiveBuffer[0];
   
-    const getData = (message[0].receiveBuffer[0] << 8 )+ message[0].receiveBuffer[1];
+    const data = (message[0].receiveBuffer[0] << 8 )+ message[0].receiveBuffer[1];
   
-    console.log(getData);
-      
-    console.log(error);
-    console.log(parity);
+    console.log(`Data: ${data}`);
+    console.log(`Error: ${error}`);
+    console.log(`Parity: ${parity}`);
+
+    app.get('/spi-data', (req, res) => {
+      res.json({
+        data,
+        error,
+        parity
+      });
+    });
   });
 });
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+})
+
+app.listen(3000, () => {
+  console.log('Server started on port 3000')
+})
