@@ -1,28 +1,89 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Data</title>
-    <meta charset = "UTF-8">
-</head>
-
-<body>
-    <h1>Live Data:</h1>
-    <p>Data: <span id ="data"></span></p>
-    <p>Error: <span id="error"></span></p>
-    <p>Parity: <span id="Parity"></span></p>
-
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        fetch('/spi-data')
-        .then(response => response.json)
-        .then(data => {
-            //Here we are update the HTML el with the received data
-            document.getElementById('data').textContent = data.data;
-            document.getElementById('error').textContent = data.error;
-            document.getElementById('parity').textContent = data.parity;
-        })
-        .catch(erro => console.log(error))
+    const socket = io();
+    socket.on('data', (data) => {
+            document.getElementById('data').innerHTML = data.data;
+            document.getElementById('parity').innerHTML = data.parity;
+            document.getElementById('error').innerHTML = data.error;
+            //~ document.getElementById('warning').innerHTML = data.warning;
+            //~ document.getElementById('driverState').innerHTML = data.driverState;
+            //~ document.getElementById('workingMode').innerHTML = data.workingMode;
+            //~ document.getElementById('motionOnGoing').innerHTML = data.motionOnGoing;
+            //~ document.getElementById('onTargetPosition').innerHTML = data.onTargetPosition;
+            document.getElementById('actualPosition').innerHTML = data.actualPosition;
+            //~ document.getElementById('actualTorque').innerHTML = data.actualTorque;
+            document.getElementById('actualFrequency').innerHTML = data.actualFrequency;
+            
+            /////////////////~ part of Chart.js////////////////////////
+            
+            //~ chart.data.labels.push(new Data().toLocaleTimeString());
+            //~ chart.data.datasets[0].data.push(data);
+            //~ chart.update();
+ });
+ 
+    socket.emit('data');
     </script>
+    <link rel="stylesheet" href="./index.css" />
+</head>
+<body>
+    
+    <div class="data">
+        <h1>Allenaz srl</h1>
+        <div>
+            <ul class="data_list">
+            <h2>Live data</h2>
+                <li>Data: <span id="data"></span></li>
+                <li>Parity: <span id="parity"></span></li>
+                <li>Error: <span id="error"></span></li>
+                <li>Warning: <span id="warning"></span></li>
+                <li>Driver state: <span id="driverState"></span></li>
+                <li>Working mode: <span id="workingMode"></span></li>
+                <li>Motion on going: <span id="motionOnGoing"></span></li>
+                <li>On target position: <span id="onTargetPosition"></span></li>
+                <li>Actual position: <span id="actualPosition"></span></li>
+                <li>Actual torque: <span id="actualTorque"></span></li>
+                <li>Actual frequency: <span id="actualFrequency"></span></li>
+            </ul>
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+    
+    <script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Data', 'Error' ,'Parity'],
+            datasets: [{
+                label: 'Data',
+                data: ['data'],
+                borderColor: 'blue',
+                fill: false,
+                }, {
+                label: 'Actual frequency',
+                data: ['actualFrequency'],
+                borderColor: 'yellow',
+                fill: false,
+            }]
+        }
+        });
+ socket.on('data', (data) => {
+            chart.data.labels.push(new Date().toLocaleTimeString());
+            chart.data.datasets[0].data.push(data.data);
+            chart.data.datasets[1].data.push(data.actualFrequency);
+            chart.update();
+ });
+
+</script>
+    
+    
 </body>
 
 </html>
