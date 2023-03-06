@@ -1,0 +1,9 @@
+.data {
+display:flex;
+justify-content:center;
+}
+
+.data_list{
+display:flex;
+justify-content: space-between;
+}

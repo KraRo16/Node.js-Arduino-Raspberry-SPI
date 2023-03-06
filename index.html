@@ -31,12 +31,20 @@
     socket.emit('data');
     </script>
     <link rel="stylesheet" href="./index.css" />
+    <style>
+    #myChart{
+        width="800px";
+        height="600px";
+        }
+    
+    
+    </style>
 </head>
 <body>
     
     <div class="data">
         <h1>Allenaz srl</h1>
-        <div>
+        <div id="section">
             <ul class="data_list">
             <h2>Live data</h2>
                 <li>Data: <span id="data"></span></li>
