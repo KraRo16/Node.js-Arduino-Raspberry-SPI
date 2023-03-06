@@ -48,13 +48,9 @@ const device = spi.open(0, 0, config, err => {
   let data = (message[0].receiveBuffer[0] << 8 )+ message[0].receiveBuffer[1];
   let error = ((0b01000000)&(message[0].receiveBuffer[0])) >> 6;
   let parity = ((0b10000000)&(message[0].receiveBuffer[0])) >> 7;
-  //~ let warning = ;
-  //~ let driverState = ;
-  //~ let workingMode = ;
-  //~ let motionOnGoing = ;
-  //~ let onTargetPosition = ;
+
   let actualPosition = data;
-  //~ let actualTorque = ;
+
   let actualFrequency = 3*data;
     
   
@@ -73,13 +69,9 @@ const device = spi.open(0, 0, config, err => {
       data: data,
       parity: parity,
       error: error,
-      //~ warning: warning,
-      //~ driverState: driverState,
-      //~ workingMode: workingMode,
-      //~ motionOnGoing: motionOnGoing,
-      //~ onTargetPosition: onTargetPosition,
+
       actualPosition: actualPosition,
-      //~ actualTorque: actualTorque,     
+  
       actualFrequency: actualFrequency,
     });
   });
@@ -101,13 +93,9 @@ io.on('connection', socket => {
       data: data,
       parity: parity,
       error: error,
-      //~ warning: warning,
-      //~ driverState: driverState,
-      //~ workingMode: workingMode,
-      //~ motionOnGoing: motionOnGoing,
-      //~ onTargetPosition: onTargetPosition,
+
       actualPosition: actualPosition,
-      //~ actualTorque: actualTorque,     
+   
       actualFrequency: actualFrequency,
     };
     io.emit('data', message);
